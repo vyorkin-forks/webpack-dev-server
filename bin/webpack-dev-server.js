@@ -46,6 +46,8 @@ var optimist = require("optimist")
 
 	.describe("port", "The port").default("port", 8080)
 
+	.describe("public", "The public hostname/ip address of the server")
+
 	.describe("host", "The hostname/ip address the server will bind to").default("host", "localhost");
 
 require("webpack/bin/config-optimist")(optimist);
@@ -62,6 +64,9 @@ if(argv.host !== "localhost" || !options.host)
 
 if(argv.port !== 8080 || !options.port)
 	options.port = argv.port;
+
+if(!options.public)
+	options.public = argv.public;
 
 if(!options.publicPath) {
 	options.publicPath = firstWpOpt.output && firstWpOpt.output.publicPath || "";
@@ -140,7 +145,7 @@ if(argv["compress"])
 var protocol = options.https ? "https" : "http";
 
 if(options.inline) {
-	var devClient = [require.resolve("../client/") + "?" + protocol + "://" + options.host + ":" + options.port];
+	var devClient = [require.resolve("../client/") + "?" + protocol + "://" + (options.public || (options.host + ":" + options.port))];
 
 	if(options.hot)
 		devClient.push("webpack/hot/dev-server");
